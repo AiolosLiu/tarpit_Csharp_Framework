@@ -1,7 +1,3 @@
-# Code
-
-## Target .Net Framework 4.6.1
-
 ## File
 - [controller/HomeController.cs::QueryOrder](demo/Controller/HomeController.cs#L41)
 - [controller/HomeController.cs::RuntTimeExec](demo/Controller/HomeController.cs#L99)
