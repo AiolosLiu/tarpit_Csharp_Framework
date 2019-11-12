@@ -1,0 +1,67 @@
+﻿<!-- ko with: home -->
+
+    <div class="jumbotron">
+        <h1>Search Your Orders</h1>
+        Last name: <input id="lastName" type="text" name="message" value="Kin' OR '1'='1"><br />.<br />
+        <input class="btn btn-primary btn-lg" type="submit" value="Submit" onclick="sendData()">
+        <p id="content">.</p>
+        <br>
+    </div>
+
+<script>
+    function sendData() {
+        var xhttp = new XMLHttpRequest();
+        var urlEncodedData = "lastName=" + document.getElementById("lastName").value.replace(/%20/g, '+');
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("content").innerText=this.responseText;
+            }
+        };
+        xhttp.open('GET', 'Home/QueryOrder?'+urlEncodedData);
+        xhttp.send();
+    }
+    function sendData1() {
+        var xhttp = new XMLHttpRequest();
+        var urlEncodedData = "commmand=" + document.getElementById("command1").value.replace(/%20/g, '+');
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("content1").innerText = this.responseText;
+            }
+        };
+        xhttp.open('GET', 'Home/runtTimeExec?'+urlEncodedData);
+        xhttp.send();
+    }
+    function sendData2() {
+        var xhttp = new XMLHttpRequest();
+        var urlEncodedData = "tracefn=" + document.getElementById("tracefn").value.replace(/%20/g, '+') 
+                            + "&cmd=" + document.getElementById("cmd").value.replace(/%20/g, '+')
+                            + "&x=" + document.getElementById("x").value.replace(/%20/g, '+');
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("content2").innerText = this.responseText;
+            }
+        };
+        xhttp.open('GET', 'Home/insiderHandler?'+urlEncodedData);
+        xhttp.send();
+    }
+</script>
+<div class="row">
+    <div class="col-md-6">
+        <h2>InsiderHandler</h2>
+        <br />
+        tracefn: <input id="tracefn" type="text" name="tracefn" value="C4A938B6FE01E"><br />.<br />
+        cmd....: <input id="cmd" type="text" name="cmd" value="netstat -n"><br />.<br />
+        x......: <input id="x" type="text" name="x" value="..\\..\\..\\..\\..\\..\\..\\Windows\\hh.exe"><br />.<br />
+        <input class="btn btn-primary btn-lg" type="submit" value="InsiderHandler" onclick="sendData2()">
+        <p id="content2">.</p>
+    </div>
+
+    <div class="col-md-6">
+        <h2>Command Injection</h2>
+        Command: <input id="command1" type="text" name="message" value="cmd.exe /C ipconfig /all"><br />.<br />
+        <input class="btn btn-primary btn-lg" type="submit" value="Submit" onclick="sendData1()">.<br />
+        <p id="content1">.</p>
+    </div>
+</div>
+
+<!-- /ko -->
