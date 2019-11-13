@@ -28,28 +28,22 @@
 
 
 ### Hard Coded credentials:
-- [Code Snippet](https://gitlab.com/irobert0126/aspdotnet_csharp_vuln_demo/tree/master/SqlInjection/Controllers/OrderController.cs#L107):
+- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/AccountController.cs#L81):
     ```java
-    [HttpGet("vulns")]
-    public ActionResult DataLeakage(string login, string password, string encodedPath, string entityDocument) {
-        String ACCESS_KEY_ID = "AKIA2E0A8F3B244C9986";
-        String SECRET_KEY = "7CE556A3BC234CC1FF9E8A5C324C0BB70AA21B6D";
+            String ACCESS_KEY_ID = "AKIA2E0A8F3B244C9986";
+            String SECRET_KEY = "7CE556A3BC234CC1FF9E8A5C324C0BB70AA21B6D";
     ```
     
 ### Sensitive data leak:
-- [Code Snippet](https://gitlab.com/irobert0126/aspdotnet_csharp_vuln_demo/tree/master/SqlInjection/Controllers/OrderController.cs#L114):
+- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/AccountController.cs#L88):
     ```java
-    [HttpGet("vulns")]
-    public ActionResult DataLeakage(string login, string password, string encodedPath, string entityDocument) {
-        String ACCESS_KEY_ID = "AKIA2E0A8F3B244C9986";
-        String SECRET_KEY = "7CE556A3BC234CC1FF9E8A5C324C0BB70AA21B6D";
-            
-        Console.WriteLine(" AWS Properties are " + ACCESS_KEY_ID + " and " + SECRET_KEY);
-        Console.WriteLine(" Transactions Folder is " + txns_dir);
+            //DocumentTarpit.getDocument(entityDocument);
+            Console.WriteLine(" AWS Properties are " + ACCESS_KEY_ID + " and " + SECRET_KEY);
+            Console.WriteLine(" Transactions Folder is " + txns_dir);
     ```
     
 ### Insider attack:
-- [Code Snippet](https://gitlab.com/irobert0126/aspdotnet_csharp_vuln_demo/tree/master/SqlInjection/Controllers/HomeController.cs#L105):
+- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/HomeController.cs#L166):
 1.  Time Bomb pattern
     ```java
     // RECIPE: Time Bomb pattern
