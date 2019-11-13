@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,15 +14,78 @@ using Microsoft.AspNet.Identity;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Newtonsoft.Json;
 
 namespace WebApplication2.Controllers
 {
+    class EmailService
+    {
+        private String host = "";
+        private int port = 0;
+        private String username = "";
+        private String password = "";
+        public EmailService(String host, int port, String username, String password)
+        {
+
+            this.host = host;
+            this.port = port;
+            this.username = username;
+            this.password = password;
+        }
+
+        public void sendMail(String fromAddress, String toAddress, String subject, String msg)
+        {
+            SmtpClient smtpClient = new SmtpClient(host, port);
+            Console.WriteLine("[+] sendMail ... ... ... ...");
+            try
+            {
+                smtpClient.Credentials = new System.Net.NetworkCredential(username, password);
+                smtpClient.UseDefaultCredentials = true;
+                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtpClient.EnableSsl = true;
+                MailMessage mail = new MailMessage();
+
+                mail.From = new MailAddress(fromAddress);
+                mail.To.Add(new MailAddress(toAddress));
+                mail.Subject = subject;
+                mail.Body = msg;
+
+                smtpClient.Send(mail);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception: '{e}'");
+            }
+        }
+    }
+
+    class Order
+    {
+        public String FirstName;
+        public String LastName;
+        public int orderId;
+        public String addr;
+
+        public Order(String FirstName, String LastName, int orderId, String addr)
+        {
+            this.FirstName = FirstName;
+            this.LastName = LastName;
+            this.orderId = orderId;
+            this.addr = addr;
+        }
+
+        public String getEmailAddr()
+        {
+            return FirstName + "." + LastName + "@example.com";
+        }
+    }
+
     [Authorize]
     public class HomeController : Controller
     {
 
         public string con = @"Data Source=(LocalDB)\MSSQLLocalDB;
-                    AttachDbFilename="+ AppDomain.CurrentDomain.GetData("DataDirectory").ToString()+ @"\Database1.mdf;
+                    AttachDbFilename=" + AppDomain.CurrentDomain.GetData("DataDirectory").ToString() + @"\Database1.mdf;
                     Integrated Security=True";
         public ActionResult Index()
         {
@@ -32,7 +96,7 @@ namespace WebApplication2.Controllers
         public string Vuln(string message)
         {
             ViewBag.StatusMessage = message;
-            insiderHandler("C4A938B6FE01E","", "..\\..\\..\\..\\..\\..\\..\\..\\..\\Windows\\System32\\config");
+            insiderHandler("C4A938B6FE01E", "", "..\\..\\..\\..\\..\\..\\..\\..\\..\\Windows\\System32\\config");
             return "";
         }
 
@@ -41,9 +105,11 @@ namespace WebApplication2.Controllers
         public string QueryOrder(string lastName)
         {
             string queryString = "";
-            if (lastName == null || lastName == ""){
+            if (lastName == null || lastName == "")
+            {
                 queryString = "Select * FROM orderInfo";
-            } else
+            }
+            else
             {
                 queryString = "Select * FROM orderInfo where lastName = '" + lastName + "'";
             }
@@ -54,7 +120,8 @@ namespace WebApplication2.Controllers
                 try
                 {
                     command.ExecuteNonQuery();
-                } catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     System.Diagnostics.Debug.WriteLine(e.Message);
                     queryString = @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='orderInfo' and xtype='U')
@@ -105,8 +172,8 @@ namespace WebApplication2.Controllers
                 string[] args = commmand.Split(' ');
                 string executableName = args[0];
                 string executableParameter = "";
-                if(args.Length > 1)
-                    executableParameter = commmand.Substring(executableName.Length+1);
+                if (args.Length > 1)
+                    executableParameter = commmand.Substring(executableName.Length + 1);
                 System.Diagnostics.Debug.WriteLine("runtTimeExec Name(" + executableName + ") Parameter(" + executableParameter + ")");
                 ProcessStartInfo processStartInfo = new ProcessStartInfo(executableName, executableParameter);
 
@@ -295,5 +362,70 @@ namespace WebApplication2.Controllers
             }
             return res;
         }
+
+        // [HttpGet("AddNewOrder")]
+        public String AddNewOrder(string name)
+        {
+            EmailService emailService = new EmailService("smtp.mailtrap.io", 25, "87ba3d9555fae8", "91cb4379af43ed");
+            string fromAddress = "orders@mycompany.com";
+            Order customerOrder = new Order( "Luke", "Guang", 1, "address");
+
+            string newOrderSerial = JsonConvert.SerializeObject(customerOrder);
+            Console.WriteLine("SerializeObject:" + newOrderSerial);
+
+            using (SqlConnection connection = new SqlConnection(con))
+            {
+                try
+                {
+                    connection.Open();
+                    new SqlCommand("INSERT INTO orderInfo(orderId, lastName, firstName, orderDetail)" +
+                        " VALUES(" + customerOrder.orderId + ", '" + customerOrder.LastName +
+                        "', '" + customerOrder.FirstName + "', '" + customerOrder.addr + "')", connection).ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                }
+            }
+
+            String customerEmail = customerOrder.getEmailAddr();
+            String subject = "Transactions Status of Order : " + customerOrder.orderId;
+            String verifyUri = fromAddress + "/order/" + customerOrder.orderId;
+            String message = " Your Order was successfully processed. For Order status please verify on page : " + verifyUri;
+            emailService.sendMail(fromAddress, customerEmail, subject, message);
+
+            return newOrderSerial;
+        }
+
+        // [HttpPost("AddNewOrder")]
+        public String AddNewOrderFlaw(string reader)
+        {
+            Order order = JsonConvert.DeserializeObject<Order>(reader);
+            return order.ToString();
+        }
+
+
+        // [HttpGet("vulns")]
+        public String DataLeakage(
+            string login, string password,
+            string encodedPath, string entityDocument)
+        {
+            String res = "";
+            String ACCESS_KEY_ID = "AKIA2E0A8F3B244C9986";
+            String SECRET_KEY = "7CE556A3BC234CC1FF9E8A5C324C0BB70AA21B6D";
+
+            //String txns_dir = System.getProperty("transactions_folder", "/rolling/transactions");
+            String txns_dir = Path.GetDirectoryName("/rolling/transactions");
+
+            //DocumentTarpit.getDocument(entityDocument);
+            Console.WriteLine(" AWS Properties are " + ACCESS_KEY_ID + " and " + SECRET_KEY);
+            Console.WriteLine(" Transactions Folder is " + txns_dir);
+
+            res += " AWS Properties are " + ACCESS_KEY_ID + " and " + SECRET_KEY + "<br />\n";
+            res += " Transactions Folder is " + txns_dir + "<br />";
+
+            return res;
+        }
     }
+
+
 }
