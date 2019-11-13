@@ -43,7 +43,7 @@
     ```
     
 ### Insider attack:
-- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/HomeController.cs#L166):
+- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/HomeController.cs#L233):
 1.  Time Bomb pattern
     ```java
     // RECIPE: Time Bomb pattern
@@ -105,7 +105,7 @@
     ```
 - Command-Line Demo:
     ```sh
-    $ curl -X POST -d "reader={\"Id\":0,\"AspNetUserId\":1,\"LastName\":\"Xu\",\"FirstName\":\"Zhaoyan\",\"FullName\":\"Luke\'' Father\",\"AspNetUser\":null}" http://localhost:5005/AddNewOrder
+    $ curl -X POST -d "reader={\"Id\":0,\"AspNetUserId\":1,\"LastName\":\"l\",\"FirstName\":\"l\",\"FullName\":\"ll\",\"AspNetUser\":null}" http://localhost:5005/AddNewOrder
     
       SqlInjection.Models.Order 
     ```
