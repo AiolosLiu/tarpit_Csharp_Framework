@@ -28,14 +28,14 @@
 
 
 ### Hard Coded credentials:
-- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/AccountController.cs#L81):
+- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/HomeController.cs#L413):
     ```java
             String ACCESS_KEY_ID = "AKIA2E0A8F3B244C9986";
             String SECRET_KEY = "7CE556A3BC234CC1FF9E8A5C324C0BB70AA21B6D";
     ```
     
 ### Sensitive data leak:
-- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/AccountController.cs#L88):
+- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/HomeController.cs#L420):
     ```java
             //DocumentTarpit.getDocument(entityDocument);
             Console.WriteLine(" AWS Properties are " + ACCESS_KEY_ID + " and " + SECRET_KEY);
@@ -95,7 +95,7 @@
     ```
 
 ### Business logic flaw
-- [Code Snippet](https://gitlab.com/irobert0126/aspdotnet_csharp_vuln_demo/tree/master/SqlInjection/Controllers/OrderController.cs#L94):
+- [Code Snippet](https://github.com/AiolosLiu/tarpit_Csharp_Framework/blob/master/src/WebApplication2/Controllers/HomeController.cs#L400):
     ```java
     [HttpPost("AddNewOrder")]
     public ActionResult AddNewOrderFlaw(string reader) {
